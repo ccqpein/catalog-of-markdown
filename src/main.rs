@@ -1,4 +1,4 @@
-use contents_maker::handle_file;
+use catalog_of_markdown::handle_file;
 use std::env;
 
 fn main() -> std::io::Result<()> {

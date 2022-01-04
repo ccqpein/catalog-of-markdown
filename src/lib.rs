@@ -49,7 +49,7 @@ fn line_handler(s: &str, bucket: &mut Vec<String>) -> std::result::Result<(), St
             let content = pick_the_head_content(&cap)?;
             let content = content.trim_end_matches([' ', '\n']);
             let line = format!(
-                "{}-[{}](#{})",
+                "{}- [{}](#{})",
                 std::iter::repeat("  ").take(space_len).collect::<String>(),
                 content,
                 String::from_iter(
@@ -79,11 +79,11 @@ mod tests {
 
         let case = "## level 2 ##";
         line_handler(case, &mut bucket)?;
-        assert_eq!(bucket[0], "  -[level 2](#level-2)".to_string());
+        assert_eq!(bucket[0], "  - [level 2](#level-2)".to_string());
 
         let case = "# Level 1  ";
         line_handler(case, &mut bucket)?;
-        assert_eq!(bucket[1], "-[Level 1](#level-1)".to_string());
+        assert_eq!(bucket[1], "- [Level 1](#level-1)".to_string());
 
         Ok(())
     }
@@ -94,11 +94,11 @@ mod tests {
 
         let case = clean_line_content(" ## level ,2 ##").unwrap();
         line_handler(case, &mut bucket)?;
-        assert_eq!(bucket[0], "  -[level ,2](#level-2)".to_string());
+        assert_eq!(bucket[0], "  - [level ,2](#level-2)".to_string());
 
         let case = "# level 1 & c ";
         line_handler(case, &mut bucket)?;
-        assert_eq!(bucket[1], "-[level 1 & c](#level-1--c)".to_string());
+        assert_eq!(bucket[1], "- [level 1 & c](#level-1--c)".to_string());
 
         Ok(())
     }

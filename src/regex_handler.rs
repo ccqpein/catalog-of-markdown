@@ -101,5 +101,8 @@ mod tests {
 
         let title = capture_title("## level ,2 ##").unwrap();
         assert_eq!(pick_the_head_content(&title), Ok("level ,2 ".to_string()));
+
+        let title = capture_title("## with-between words ##").unwrap();
+        assert_eq!(pick_the_head_content(&title), Ok("with-between words ".to_string()));
     }
 }

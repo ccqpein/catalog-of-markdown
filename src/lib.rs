@@ -56,7 +56,7 @@ fn line_handler(s: &str, bucket: &mut Vec<String>) -> std::result::Result<(), St
                     content
                         .to_lowercase()
                         .chars()
-                        .filter(|&c| c.is_alphanumeric() || c.is_whitespace())
+                        .filter(|&c| c.is_alphanumeric() || c.is_whitespace() || c == '-')
                 )
                 .split(" ")
                 .collect::<Vec<_>>()
@@ -100,6 +100,13 @@ mod tests {
         line_handler(case, &mut bucket)?;
         assert_eq!(bucket[1], "- [level 1 & c](#level-1--c)".to_string());
 
+        let case = "## with-between words ##";
+
+        line_handler(case, &mut bucket)?;
+        assert_eq!(
+            bucket[2],
+            "  - [with-between words](#with-between-words)".to_string()
+        );
         Ok(())
     }
 }

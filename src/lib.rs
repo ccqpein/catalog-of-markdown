@@ -12,11 +12,17 @@ pub fn handle_file(filepath: &str) -> Result<Vec<String>> {
 
     let mut result = vec![];
     let mut cache = String::new();
+    let mut escaped = false;
     loop {
+        cache.clear();
         match buf.read_line(&mut cache) {
             Ok(0) | Err(_) => break,
             Ok(_) => {
                 if let Some(ccache) = clean_line_content(&cache) {
+                    escaped ^= check_if_escape(ccache);
+                    if escaped {
+                        continue;
+                    }
                     match line_handler(ccache, &mut result) {
                         Ok(_) => (),
                         Err(_s) => (), //return Err(Error::new(ErrorKind::InvalidData, s)),
@@ -24,7 +30,6 @@ pub fn handle_file(filepath: &str) -> Result<Vec<String>> {
                 } else {
                     continue;
                 }
-                cache.clear()
             }
         }
     }
@@ -69,9 +74,13 @@ fn line_handler(s: &str, bucket: &mut Vec<String>) -> std::result::Result<(), St
     }
 }
 
+fn check_if_escape(s: &str) -> bool {
+    s.starts_with("```")
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::{clean_line_content, line_handler};
+    use crate::{check_if_escape, clean_line_content, line_handler};
 
     #[test]
     fn test_line_handler() -> Result<(), String> {
@@ -108,5 +117,30 @@ mod tests {
             "  - [with-between words](#with-between-words)".to_string()
         );
         Ok(())
+    }
+
+    #[test]
+    fn test_escape_logic() {
+        let mut escape = false;
+
+        escape ^= false;
+        assert!(!escape);
+
+        escape ^= true;
+        assert!(escape);
+
+        escape ^= false;
+        assert!(escape);
+
+        escape ^= true;
+        assert!(!escape);
+    }
+
+    #[test]
+    fn test_check_if_escape() {
+        let s = String::from("```rust");
+        assert!(check_if_escape(&s));
+
+        assert!(check_if_escape("```"));
     }
 }

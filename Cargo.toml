@@ -1,6 +1,6 @@
 [package]
 name = "catalog-of-markdown"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2021"
 authors = ["ccQpein"]
 description = "Generate the catalog of markdown file."
@@ -13,3 +13,4 @@ readme = "README.md"
 [dependencies]
 regex = "1"
 lazy_static = "1"
+clap = { version = "4", features = ["derive"] }

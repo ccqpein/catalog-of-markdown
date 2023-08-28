@@ -4,7 +4,7 @@ Generate catalog of `README.md` on Github Repo.
 
 **Example**
 
-`cargo run ./README.md.example`
+`cargo run -- Example.md`
 
 will generate content below in stdout:
 
@@ -14,4 +14,19 @@ will generate content below in stdout:
     - [sub sub title](#sub-sub-title)
   - [Subtitle 1](#subtitle-1)
   - [Subtitle 2](#subtitle-2)
+```
+
+`cargo run -- -d 1 ./Example.md`
+
+```
+- [Subtitle0](#subtitle0)
+  - [sub sub title](#sub-sub-title)
+- [Subtitle 1](#subtitle-1)
+- [Subtitle 2](#subtitle-2)
+```
+
+`cargo run -- -d 2 ./Example.md`
+
+```
+- [sub sub title](#sub-sub-title)
 ```

@@ -1,8 +1,12 @@
-use catalog_of_markdown::handle_file;
-use std::env;
+use catalog_of_markdown::{handle_file, Args};
+use clap::Parser;
 
 fn main() -> std::io::Result<()> {
-    let filepath = env::args().nth(1).unwrap();
-    println!("{}", handle_file(&filepath)?.join("\n"));
+    let commandline_args = Args::parse();
+
+    println!(
+        "{}",
+        handle_file(&commandline_args.md_file, commandline_args.depth)?.join("\n")
+    );
     Ok(())
 }

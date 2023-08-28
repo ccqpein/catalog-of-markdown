@@ -1,10 +1,22 @@
 mod regex_handler;
 
+use clap::Parser;
 use regex_handler::*;
 use std::io::prelude::*;
 use std::io::Result;
 
-pub fn handle_file(filepath: &str) -> Result<Vec<String>> {
+/// Command Line Args
+#[derive(Default, Parser, Debug)]
+#[command(author = "ccQpein", version, about)]
+pub struct Args {
+    #[arg(short, long, default_value = "0")]
+    pub depth: usize,
+
+    #[arg(value_name = "file")]
+    pub md_file: String,
+}
+
+pub fn handle_file(filepath: &str, depth: usize) -> Result<Vec<String>> {
     let mut buf = vec![];
     let mut f: std::fs::File = std::fs::File::open(filepath)?;
     f.read_to_end(&mut buf)?;
@@ -23,7 +35,7 @@ pub fn handle_file(filepath: &str) -> Result<Vec<String>> {
                     if escaped {
                         continue;
                     }
-                    match line_handler(ccache, &mut result) {
+                    match line_handler(ccache, &mut result, depth) {
                         Ok(_) => (),
                         Err(_s) => (), //return Err(Error::new(ErrorKind::InvalidData, s)),
                     };
@@ -46,11 +58,20 @@ fn clean_line_content(s: &str) -> Option<&str> {
     }
 }
 
-fn line_handler(s: &str, bucket: &mut Vec<String>) -> std::result::Result<(), String> {
+fn line_handler(
+    s: &str,
+    bucket: &mut Vec<String>,
+    depth: usize,
+) -> std::result::Result<(), String> {
     match capture_title(s) {
         Some(cap) => {
             let m = pick_the_head(&cap)?;
-            let space_len = head_count(&m) - 1;
+            let offset = head_count(&m) - 1;
+            let space_len = if offset >= depth {
+                offset - depth
+            } else {
+                return Ok(());
+            };
             let content = pick_the_head_content(&cap)?;
             let content = content.trim_end_matches([' ', '\n']);
             let line = format!(
@@ -87,11 +108,11 @@ mod tests {
         let mut bucket = vec![];
 
         let case = "## level 2 ##";
-        line_handler(case, &mut bucket)?;
+        line_handler(case, &mut bucket, 0)?;
         assert_eq!(bucket[0], "  - [level 2](#level-2)".to_string());
 
         let case = "# Level 1  ";
-        line_handler(case, &mut bucket)?;
+        line_handler(case, &mut bucket, 0)?;
         assert_eq!(bucket[1], "- [Level 1](#level-1)".to_string());
 
         Ok(())
@@ -102,16 +123,16 @@ mod tests {
         let mut bucket = vec![];
 
         let case = clean_line_content(" ## level ,2 ##").unwrap();
-        line_handler(case, &mut bucket)?;
+        line_handler(case, &mut bucket, 0)?;
         assert_eq!(bucket[0], "  - [level ,2](#level-2)".to_string());
 
         let case = "# level 1 & c ";
-        line_handler(case, &mut bucket)?;
+        line_handler(case, &mut bucket, 0)?;
         assert_eq!(bucket[1], "- [level 1 & c](#level-1--c)".to_string());
 
         let case = "## with-between words ##";
 
-        line_handler(case, &mut bucket)?;
+        line_handler(case, &mut bucket, 0)?;
         assert_eq!(
             bucket[2],
             "  - [with-between words](#with-between-words)".to_string()

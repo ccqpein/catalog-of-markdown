@@ -2,6 +2,12 @@
 
 Generate catalog of `README.md` on Github Repo.
 
+## Install ##
+
+`cargo install catalog-of-markdown`
+
+## Usage ##
+
 **Example**
 
 `cargo run -- Example.md`

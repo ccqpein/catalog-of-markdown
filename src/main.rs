@@ -6,7 +6,12 @@ fn main() -> std::io::Result<()> {
 
     println!(
         "{}",
-        handle_file(&commandline_args.md_file, commandline_args.depth)?.join("\n")
+        handle_file(
+            &commandline_args.md_file,
+            commandline_args.depth,
+            &commandline_args.sym
+        )?
+        .join("\n"),
     );
     Ok(())
 }

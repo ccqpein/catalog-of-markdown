@@ -36,3 +36,13 @@ will generate content below in stdout:
 ```
 - [sub sub title](#sub-sub-title)
 ```
+
+`cargo run -- -s "*" ./Example.md`
+
+```
+* [Example](#example)
+  * [Subtitle0](#subtitle0)
+    * [sub sub title](#sub-sub-title)
+  * [Subtitle 1](#subtitle-1)
+  * [Subtitle 2](#subtitle-2)
+```

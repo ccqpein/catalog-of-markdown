@@ -1,11 +1,9 @@
-use lazy_static::*;
 use regex::{Captures, Match, Regex};
+use std::sync::LazyLock;
 
 const TITLE_REGEX_STR: &'static str = r"^(?P<HEAD>#+\s*)(?P<CONTENT>[^#]*)";
 
-lazy_static! {
-    static ref TITLE_REGEX: Regex = Regex::new(TITLE_REGEX_STR).unwrap();
-}
+static TITLE_REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new(TITLE_REGEX_STR).unwrap());
 
 pub fn capture_title(s: &str) -> Option<Captures> {
     TITLE_REGEX.captures(s)
@@ -103,6 +101,9 @@ mod tests {
         assert_eq!(pick_the_head_content(&title), Ok("level ,2 ".to_string()));
 
         let title = capture_title("## with-between words ##").unwrap();
-        assert_eq!(pick_the_head_content(&title), Ok("with-between words ".to_string()));
+        assert_eq!(
+            pick_the_head_content(&title),
+            Ok("with-between words ".to_string())
+        );
     }
 }
